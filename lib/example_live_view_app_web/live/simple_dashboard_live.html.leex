@@ -1,0 +1,42 @@
+<section class="container p-1 w-auto">
+  <h1>Dashboard</h1>
+  <div class="flex justify-end">
+    <%= if not @in_edition do %>
+      <button class="" phx-click="edit">Edit</button>
+    <% else %>
+      <div>
+        <button type="submit" form="item_edit_form">Save</button>
+        <%= if @item_create_data["id"] != ""  && !is_nil(@item_create_data["id"])do %>
+          <button class="bg-red-500" type="button" phx-click="remove_edited">Remove</button>
+        <% end %>
+        <button type="button" phx-click="abort_edit">Abort</button>
+        <form id="type_select_form" phx-change="type_selected">
+            Type <%= select :item_create_data, :item_type, ["": "", "Light": "light", "Dimmer": "dimmer"], value: @item_create_data["item_type"] %>
+        </form>
+        <%= f = form_for :item, "#", [id: "item_edit_form", phx_submit: :save] %>
+          <%= hidden_input f, :item_type, value: @item_create_data["item_type"] %>
+          <%= hidden_input f, :id, value: @item_create_data["id"] %>
+
+          <%= case @item_create_data["item_type"] do
+            "light" -> render ExampleLiveViewAppWeb.DashboardView, "light_form_fields.html", f: f, item: @item_create_data
+            "dimmer" -> render ExampleLiveViewAppWeb.DashboardView, "dimmer_form_fields.html", f: f, item: @item_create_data
+            _ -> nil
+          end %>
+          </form>
+      </div>
+    <% end %>
+  </div>
+  <div class="grid sm:grid-cols-3 gap-2">
+    <div class="col">
+      <%= live_component ExampleLiveViewAppWeb.LightGroupComponent, lights: @lights, in_edition: @in_edition%>
+    </div>
+    <%= for dimmer <- @dimmers do %>
+      <div class="col">
+        <%= live_component ExampleLiveViewAppWeb.DimmerComponent, id: dimmer.id, dimmer: dimmer, in_edition: @in_edition%>
+      </div>
+    <% end %>
+  </div>
+
+  
+</section>
+

@@ -1,0 +1,11 @@
+/** assets/css/app.css */
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+@import "./phoenix.css";
+
+hr.solid {
+  border-top: 1px solid #bbb;
+  margin: 0 0 0 0;
+}

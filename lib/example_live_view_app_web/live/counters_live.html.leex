@@ -1,0 +1,14 @@
+<section>
+  <h1>Counters</h1>
+  <div class="management">
+    <button type="button" phx-click="reset_counters">Reset all</button>
+    <button type="button" phx-click="add_counter">Add counter</button>
+    <button type="button" phx-click="remove_counter">Remove counter</button>
+  </div>
+  <div class="counters">
+    <%= for id <- @counter_ids do %>
+      <%= live_component ExampleLiveViewAppWeb.CounterComponent, id: id %>
+    <% end %>
+  </div>
+</section>
+
