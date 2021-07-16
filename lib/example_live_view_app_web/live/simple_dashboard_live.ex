@@ -43,7 +43,7 @@ defmodule ExampleLiveViewAppWeb.SimpleDashboardLive do
 
   @impl true
   def handle_event("remove_edited", _unsigned_params, socket) do
-    item = socket.assigns.item_create_data |> IO.inspect()
+    item = socket.assigns.item_create_data
     id = item["id"]
 
     assigns =
