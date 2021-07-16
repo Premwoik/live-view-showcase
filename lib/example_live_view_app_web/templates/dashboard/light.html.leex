@@ -1,9 +1,7 @@
 <div id="light_<%=@light.id%>" class="rounded overflow-hidden shadow-sm p-2">
   <div class="flex p-2 max-w-full">
     <h4 class="mb-1"><%= @light.name%></h4>
-    <%= if @in_edition do %>
-      <a class="mt-1 ml-auto" phx-click="put_to_edition" phx-value-type="light" phx-value-id="<%=@light.id%>">edit</a>
-    <% end %>
+      <a x-show="open" class="mt-1 ml-auto" @click="selectToEdition" phx-value-type="light" phx-value-id="<%=@light.id%>">edit</a>
   </div>
 
   <% path = if @light.state, do: "images/icons/icons8_light_on_96.png", else: "images/icons/icons8_light_off_96.png" %>

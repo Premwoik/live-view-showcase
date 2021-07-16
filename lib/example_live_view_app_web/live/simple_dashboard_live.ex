@@ -9,18 +9,12 @@ defmodule ExampleLiveViewAppWeb.SimpleDashboardLive do
     lights = Light.list_all()
     dimmers = Dimmer.list_all()
 
-    {:ok,
-     assign(socket, in_edition: false, item_create_data: %{}, lights: lights, dimmers: dimmers)}
-  end
-
-  @impl true
-  def handle_event("edit", _unsigned_params, socket) do
-    {:noreply, assign(socket, in_edition: true)}
+    {:ok, assign(socket, item_create_data: %{}, lights: lights, dimmers: dimmers)}
   end
 
   @impl true
   def handle_event("abort_edit", _unsigned_params, socket) do
-    {:noreply, assign(socket, item_create_data: %{}, in_edition: false)}
+    {:noreply, assign(socket, item_create_data: %{})}
   end
 
   @impl true
@@ -36,14 +30,14 @@ defmodule ExampleLiveViewAppWeb.SimpleDashboardLive do
     socket =
       put_flash(socket, :info, "Saved!")
       |> assign(assigns)
-      |> assign(item_create_data: %{}, in_edition: false)
+      |> assign(item_create_data: %{})
 
     {:noreply, socket}
   end
 
   @impl true
   def handle_event("remove_edited", _unsigned_params, socket) do
-    item = socket.assigns.item_create_data |> IO.inspect()
+    item = socket.assigns.item_create_data
     id = item["id"]
 
     assigns =
@@ -62,13 +56,13 @@ defmodule ExampleLiveViewAppWeb.SimpleDashboardLive do
     socket =
       put_flash(socket, :info, "Deleted!")
       |> assign(assigns)
-      |> assign(item_create_data: %{}, in_edition: false)
+      |> assign(item_create_data: %{})
 
     {:noreply, socket}
   end
 
   @impl true
-  def handle_event("put_to_edition", %{"type" => type, "id" => id}, socket) do
+  def handle_event("select_to_edit", %{"type" => type, "id" => id}, socket) do
     {id, ""} = Integer.parse(id)
 
     item =

@@ -7,9 +7,7 @@ defmodule ExampleLiveViewAppWeb.DimmerComponent do
     <div id="dimmer_<%= @dimmer.id%>"class="rounded overflow-hidden shadow-md p-4">
       <div class="flex max-w-full">
         <h3><%= @dimmer.name%></h3>
-        <%= if @in_edition do %>
-          <a class="mt-1 ml-auto" phx-click="put_to_edition" phx-value-type="dimmer" phx-value-id="<%=@dimmer.id%>">edit</a>
-        <% end %>
+          <a x-show="open" class="mt-1 ml-auto" @click="selectToEdition" phx-value-type="dimmer" phx-value-id="<%=@dimmer.id%>">edit</a>
       </div>
       <hr class="solid">
       <div class="grid grid-cols-2 grid-gap-2 p-2">

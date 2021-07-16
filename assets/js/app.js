@@ -2,7 +2,7 @@
 // The MiniCssExtractPlugin is used to separate it out into
 // its own CSS file.
 //import "../css/app.scss"
-import "../css/app.css"
+import "../css/app.css";
 
 // webpack automatically bundles all modules in your
 // entry points. Those entry points can be configured
@@ -13,25 +13,78 @@ import "../css/app.css"
 //     import {Socket} from "phoenix"
 //     import socket from "./socket"
 //
-import "phoenix_html"
-import {Socket} from "phoenix"
-import topbar from "topbar"
-import {LiveSocket} from "phoenix_live_view"
+import "phoenix_html";
+import { Socket } from "phoenix";
+import topbar from "topbar";
+import { LiveSocket } from "phoenix_live_view";
+import "alpinejs";
 
-let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
+let Hooks = {};
+Hooks.PushEvent = {
+  mounted() {
+    window.pushEventHook = this;
+  },
+};
+
+let csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  .getAttribute("content");
+let liveSocket = new LiveSocket("/live", Socket, {
+  params: { _csrf_token: csrfToken },
+  dom: {
+    onBeforeElUpdated(from, to) {
+      if (from.__x) {
+        window.Alpine.clone(from.__x, to);
+      }
+    },
+  },
+  hooks: Hooks,
+});
 
 // Show progress bar on live navigation and form submits
-topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
-window.addEventListener("phx:page-loading-start", info => topbar.show())
-window.addEventListener("phx:page-loading-stop", info => topbar.hide())
+topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
+window.addEventListener("phx:page-loading-start", (info) => topbar.show());
+window.addEventListener("phx:page-loading-stop", (info) => topbar.hide());
 
 // connect if there are any LiveViews on the page
-liveSocket.connect()
+liveSocket.connect();
 
 // expose liveSocket on window for web console debug logs and latency simulation:
 // >> liveSocket.enableDebug()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
-window.liveSocket = liveSocket
+window.liveSocket = liveSocket;
 
+window.chooseItemType = () => {
+  return {
+    open: false,
+    type: "",
+    selectType(e) {
+      this.type = e.target.value;
+    },
+    edit() {
+      this.open = true;
+    },
+    abort() {
+      this.open = false;
+      this.type = "";
+      pushEventHook.pushEvent("abort_edit", {});
+    },
+
+    remove() {
+      this.open = false;
+      this.type = "";
+      pushEventHook.pushEvent("remove_edited", {});
+    },
+    submit() {
+      this.open = false;
+      this.type = "";
+    },
+    selectToEdition(e) {
+      let type = e.target.getAttribute("phx-value-type");
+      let id = e.target.getAttribute("phx-value-id");
+      this.type = type;
+      pushEventHook.pushEvent("select_to_edit", { type: type, id: id });
+    },
+  };
+};

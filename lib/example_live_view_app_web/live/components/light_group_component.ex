@@ -8,14 +8,9 @@ defmodule ExampleLiveViewAppWeb.LightGroupComponent do
       <h3>Lights</h3>
       <hr class="solid">
       <%= for light <- @lights do %>
-        <%= render(ExampleLiveViewAppWeb.DashboardView, "light.html", light: light, in_edition: @in_edition) %>
+        <%= render(ExampleLiveViewAppWeb.DashboardView, "light.html", light: light) %>
       <% end %>
     </div>    
     """
-  end
-
-  @impl true
-  def mount(socket) do
-    {:ok, assign(socket, value: 0)}
   end
 end

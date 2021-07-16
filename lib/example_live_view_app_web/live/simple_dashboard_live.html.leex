@@ -1,38 +1,40 @@
-<section class="container p-1 w-auto">
+<section id="dashboard_section" class="container p-1 w-auto" x-data="chooseItemType()">
   <h1>Dashboard</h1>
-  <div class="flex justify-end">
-    <%= if not @in_edition do %>
-      <button class="" phx-click="edit">Edit</button>
-    <% else %>
-      <div>
-        <button type="submit" form="item_edit_form">Save</button>
-        <%= if @item_create_data["id"] != ""  && !is_nil(@item_create_data["id"])do %>
-          <button class="bg-red-500" type="button" phx-click="remove_edited">Remove</button>
-        <% end %>
-        <button type="button" phx-click="abort_edit">Abort</button>
-        <form id="type_select_form" phx-change="type_selected">
-            Type <%= select :item_create_data, :item_type, ["": "", "Light": "light", "Dimmer": "dimmer"], value: @item_create_data["item_type"] %>
-        </form>
-        <%= f = form_for :item, "#", [id: "item_edit_form", phx_submit: :save] %>
-          <%= hidden_input f, :item_type, value: @item_create_data["item_type"] %>
-          <%= hidden_input f, :id, value: @item_create_data["id"] %>
+  <div id="edition_part" phx-hook="PushEvent" class="flex justify-end">
+    <button id="edit_btn" x-show="!open" @click="edit">Edit</button>
+    <div x-show="open">
+      <button id="save_btn" type="submit" @click="submit" form="item_edit_form">Save</button>
+      <%= if @item_create_data["id"] != ""  && !is_nil(@item_create_data["id"])do %>
+        <button id="remove_btn" class="bg-red-500" type="button" @click="remove">Remove</button>
+      <% end %>
+      <button id="abort_btn" type="button" @click="abort">Abort</button>
 
-          <%= case @item_create_data["item_type"] do
-            "light" -> render ExampleLiveViewAppWeb.DashboardView, "light_form_fields.html", f: f, item: @item_create_data
-            "dimmer" -> render ExampleLiveViewAppWeb.DashboardView, "dimmer_form_fields.html", f: f, item: @item_create_data
-            _ -> nil
-          end %>
-          </form>
-      </div>
-    <% end %>
+      <label>    
+        Type <%= select nil, :select_type, ["": "", "Light": "light", "Dimmer": "dimmer"], "x-bind:value": "type", "x-on:change": "selectType"%>
+      </label>
+      <%= f = form_for :item, "#", [id: "item_edit_form", phx_submit: :save] %>
+        <%= hidden_input f, :item_type, "x-bind:value": "type" %>
+        <%= hidden_input f, :id, value: @item_create_data["id"] %>
+        <template x-if="type === 'light'">
+          <div>
+            <%= render ExampleLiveViewAppWeb.DashboardView, "light_form_fields.html", f: f, item: @item_create_data %>
+          </div>
+        </template>
+        <template x-if="type === 'dimmer'">
+          <div>
+            <%= render ExampleLiveViewAppWeb.DashboardView, "dimmer_form_fields.html", f: f, item: @item_create_data %>
+          </div>
+        </template>
+      </form>
+    </div>
   </div>
   <div class="grid sm:grid-cols-3 gap-2">
     <div class="col">
-      <%= live_component ExampleLiveViewAppWeb.LightGroupComponent, lights: @lights, in_edition: @in_edition%>
+      <%= live_component ExampleLiveViewAppWeb.LightGroupComponent, lights: @lights %>
     </div>
     <%= for dimmer <- @dimmers do %>
       <div class="col">
-        <%= live_component ExampleLiveViewAppWeb.DimmerComponent, id: dimmer.id, dimmer: dimmer, in_edition: @in_edition%>
+        <%= live_component ExampleLiveViewAppWeb.DimmerComponent, id: dimmer.id, dimmer: dimmer %>
       </div>
     <% end %>
   </div>
