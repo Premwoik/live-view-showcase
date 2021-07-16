@@ -1,6 +1,8 @@
 defmodule ExampleLiveViewAppWeb.CounterComponent do
   use ExampleLiveViewAppWeb, :live_component
 
+  @topic "counters:lobby"
+
   @impl true
   def render(assigns) do
     ~L"""
@@ -33,12 +35,26 @@ defmodule ExampleLiveViewAppWeb.CounterComponent do
 
   @impl true
   def handle_event("inc", _unsigned_params, socket) do
-    index = socket.assigns[:value] + 1
-    {:noreply, assign(socket, value: index)}
+    id = socket.assigns.id
+    value = socket.assigns[:value] + 1
+
+    ExampleLiveViewAppWeb.Endpoint.broadcast_from(self(), @topic, "update_counter", %{
+      id: id,
+      value: value
+    })
+
+    {:noreply, assign(socket, value: value)}
   end
 
   @impl true
   def handle_event("reset", _unsigned_params, socket) do
+    id = socket.assigns.id
+
+    ExampleLiveViewAppWeb.Endpoint.broadcast_from(self(), @topic, "update_counter", %{
+      id: id,
+      value: 0
+    })
+
     socket = put_flash(socket, :success, "Counter cleared!")
     {:noreply, assign(socket, value: 0)}
   end
