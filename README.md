@@ -1,4 +1,11 @@
-# ExampleLiveViewApp
+# LiveView app showcase
+
+This LiveView demo app was prepared for the presentation about LiveView. It contains the following examples:
+  * Simple counters view with a counter as a component with state change broadcasting.
+  * A dashboard with components and edition form.
+  * Integration with TailwindCSS and Alpine.js.
+
+## ExampleLiveViewApp
 
 To start your Phoenix server:
 
